@@ -1,7 +1,7 @@
 # TG/VK Polling Bot
 
 ## Overview
-This is a simple polling bot for VKontakte (VK) messenger that allows users to participate in quizzes and answer questions.
+This is a simple polling bot for VKontakte (VK) and Telegram (TG) messenger that allows users to participate in quizzes and answer questions.
 
 ## Requirements
 - Python 3.x
