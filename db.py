@@ -19,13 +19,19 @@ def get_random_question(questions_amount=5, foldername='quiz-questions'):
                 file_contents = f.read()
 
             matches = re.findall(pattern, file_contents, re.DOTALL)
+
             for match in matches:
                 if proceeded >= questions_amount:
                     break
+                n, question, answer = match 
 
-                question = match[1].strip()
-                answer = match[2].strip().replace('Ответ:\n', '').replace('"', '').replace('.', '')
-                questions.append({'question': question, 'answer': answer})
+                questions.append({
+                    'question': question.strip(), 
+                    'answer': answer.strip().replace('Ответ:\n', '').replace('"', '').replace('.', '')})
                 proceeded += 1
 
     return random.choice(questions)
+
+
+if __name__ == '__main__':
+    print(get_random_question())
