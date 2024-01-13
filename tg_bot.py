@@ -14,7 +14,6 @@ from telegram.ext import MessageHandler
 from telegram.ext import Updater
 
 
-logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__file__)
 
 
@@ -104,6 +103,8 @@ def main():
     env.read_env()
     tg_key = env.str('TG_API_KEY')
 
+    logging.basicConfig(level=logging.ERROR)
+    
     try:
         redis_db = Redis(
             host=env.str('REDIS_HOST'),

@@ -14,7 +14,6 @@ from vk_api.longpoll import VkLongPoll
 from vk_api.utils import get_random_id
 
 
-logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__file__)
 
 
@@ -114,6 +113,8 @@ def main():
     env = Env()
     env.read_env()
     VK_TOKEN = env.str("VK_TOKEN")
+    
+    logging.basicConfig(level=logging.ERROR)
 
     logger.setLevel(logging.DEBUG)
     logger.info('vk polling bot started')
