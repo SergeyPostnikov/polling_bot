@@ -22,7 +22,7 @@ def check_answer(update, context, db):
     user_id = update.message.from_user.id
     answer = update.message.text.capitalize()
     
-    right_answer = db.get(f'{user_id}')
+    right_answer = db.get(user_id)
     if not right_answer:
         start(update, context)
     elif answer == right_answer.decode():
@@ -31,7 +31,7 @@ def check_answer(update, context, db):
         current_score += 1
         db.set(score_key, current_score)
 
-        db.set(f'{user_id}', '')
+        db.set(user_id, '')
         update.message.reply_text(
             text='Правильно!',
             reply_markup=get_menu_keyboard()
@@ -48,7 +48,7 @@ def start(update, context, db):
     score_key = f'{user_id}-score'
     db.set(score_key, 0)
 
-    db.set(f'{user_id}', '') 
+    db.set(user_id, '') 
 
     update.message.reply_text(
         "Привет! Это бот викторина.\n Чтобы проверить свои силы, нажми - \"Новый вопрос\"",
@@ -70,7 +70,7 @@ def get_menu_keyboard():
 def new_question(update, context, db, questions):
     user_id = update.message.from_user.id
     question, answer = random.choice(questions)
-    db.set(f'{user_id}', answer)
+    db.set(user_id, answer)
     update.message.reply_text(
         text=question,
         reply_markup=get_menu_keyboard()
@@ -79,13 +79,13 @@ def new_question(update, context, db, questions):
 
 def give_up(update, context, db):
     user_id = update.message.from_user.id
-    answer = db.get(f'{user_id}')
+    answer = db.get(user_id)
     if answer:
         update.message.reply_text(
             text=answer.decode(), 
             reply_markup=get_menu_keyboard()
         )
-        db.set(f'{user_id}', '')
+        db.set(user_id, '')
     else:
         start(update, context, db)
 

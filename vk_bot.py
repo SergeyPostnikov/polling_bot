@@ -21,7 +21,7 @@ logger = logging.getLogger(__file__)
 def check_answer(event, vk, db):
     user_id = event.user_id
     answer = event.text.capitalize()    
-    right_answer = db.get(f'{user_id}')
+    right_answer = db.get(user_id)
 
     if not right_answer:
         start(event, vk, db)
@@ -32,7 +32,7 @@ def check_answer(event, vk, db):
         current_score += 1
         db.set(score_key, current_score)
 
-        db.set(f'{user_id}', '')
+        db.set(user_id, '')
         vk.messages.send(
             peer_id=user_id,
             random_id=get_random_id(),
@@ -52,7 +52,7 @@ def start(event, vk, db):
     user_id = event.user_id
     score_key = f'{user_id}-score'
     db.set(score_key, 0)
-    db.set(f'{user_id}', '') 
+    db.set(user_id, '') 
 
     vk.messages.send(
         peer_id=user_id,
@@ -75,7 +75,7 @@ def get_menu_keyboard():
 def new_question(event, vk, poll, db):
     user_id = event.user_id    
     question, answer = poll
-    db.set(f'{user_id}', answer)
+    db.set(user_id, answer)
     vk.messages.send(
         peer_id=user_id,
         random_id=get_random_id(),
@@ -86,7 +86,7 @@ def new_question(event, vk, poll, db):
 
 def give_up(event, vk, db):
     user_id = event.user_id
-    answer = db.get(f'{user_id}')
+    answer = db.get(user_id)
     if answer:
         vk.messages.send(
             peer_id=user_id,
@@ -94,7 +94,7 @@ def give_up(event, vk, db):
             keyboard=get_menu_keyboard(),
             message=answer.decode()
         )
-        db.set(f'{user_id}', '')
+        db.set(user_id, '')
     else:
         start(event, vk, db)
 
@@ -124,7 +124,7 @@ def main():
         redis_db = Redis(
             host=env.str('REDIS_HOST'),
             port=env.str('REDIS_PORT'),
-            # password=env.str('REDIS_PSW'),
+            password=env.str('REDIS_PSW'),
             db=0
         )
         questions = parce_questions(questions_amount=5)
