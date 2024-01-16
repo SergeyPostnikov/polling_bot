@@ -1,8 +1,9 @@
 import logging
 import time
 import vk_api
+import random
 
-from db import get_random_question
+from db import parce_questions
 from environs import Env
 from redis import Redis
 from redis.exceptions import RedisError
@@ -71,9 +72,9 @@ def get_menu_keyboard():
     return keyboard.get_keyboard()
 
 
-def new_question(event, vk, db):
+def new_question(event, vk, poll, db):
     user_id = event.user_id    
-    question, answer = get_random_question().values()
+    question, answer = poll
     db.set(f'{user_id}', answer)
     vk.messages.send(
         peer_id=user_id,
@@ -126,13 +127,16 @@ def main():
             # password=env.str('REDIS_PSW'),
             db=0
         )
+        questions = parce_questions(questions_amount=5)
+
         vk_session = vk_api.VkApi(token=VK_TOKEN)
         vk = vk_session.get_api()
         longpoll = VkLongPoll(vk_session)
         for event in longpoll.listen():
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
                 if event.text.lower() == 'новый вопрос':
-                    new_question(event, vk, redis_db)
+                    poll = random.choice(questions)
+                    new_question(event, vk, poll, redis_db)
                 elif event.text.lower() == 'сдаться':
                     give_up(event, vk, redis_db)
                 elif event.text.lower() == 'мой счёт':

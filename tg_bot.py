@@ -1,7 +1,8 @@
 import logging
 import time
+import random
 
-from db import get_random_question
+from db import parce_questions
 from environs import Env
 from functools import partial
 from redis import Redis
@@ -66,9 +67,9 @@ def get_menu_keyboard():
     return ReplyKeyboardMarkup(keyboard)
 
 
-def new_question(update, context, db):
-    user_id = update.message.from_user.id    
-    question, answer = get_random_question().values()
+def new_question(update, context, db, questions):
+    user_id = update.message.from_user.id
+    question, answer = random.choice(questions)
     db.set(f'{user_id}', answer)
     update.message.reply_text(
         text=question,
@@ -106,10 +107,12 @@ def main():
     logging.basicConfig(level=logging.ERROR)
     
     try:
+        questions = parce_questions(questions_amount=10)
+
         redis_db = Redis(
             host=env.str('REDIS_HOST'),
             port=env.str('REDIS_PORT'),
-            # password=env.str('REDIS_PSW'),
+            password=env.str('REDIS_PASSWORD'),
             db=0
         )
 
@@ -124,7 +127,11 @@ def main():
 
         new_question_handler = MessageHandler(
             Filters.regex(r'^Новый вопрос$'), 
-            partial(new_question, db=redis_db)
+            partial(
+                new_question, 
+                db=redis_db, 
+                questions=questions
+            )
         )
         dp.add_handler(new_question_handler)
 
@@ -154,8 +161,7 @@ def main():
         logger.exception(err)
         time.sleep(30)
     except Exception as exc:
-        logger.error(f"VkBot error: {exc}")
-
+        logger.error(f"TGBot error: {exc}")
 
 
 if __name__ == '__main__':

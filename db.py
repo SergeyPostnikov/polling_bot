@@ -1,9 +1,8 @@
-import random
 import os
 import re
 
 
-def get_random_question(questions_amount=5, foldername='quiz-questions'):
+def parce_questions(questions_amount=5, foldername='quiz-questions'):
     pattern = r"Вопрос (\d+):(.*?)(Ответ:\s*.*?)(?:\n\n|\Z)"
     proceeded = 0
     questions = []  
@@ -25,13 +24,10 @@ def get_random_question(questions_amount=5, foldername='quiz-questions'):
                     break
                 n, question, answer = match 
 
-                questions.append({
-                    'question': question.strip(), 
-                    'answer': answer.strip().replace('Ответ:\n', '').replace('"', '').replace('.', '')})
+                questions.append((
+                    question.strip(), 
+                    answer.strip().replace('Ответ:\n', '').replace('"', '').replace('.', ''))
+                )
                 proceeded += 1
 
-    return random.choice(questions)
-
-
-if __name__ == '__main__':
-    print(get_random_question())
+    return questions
